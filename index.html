@@ -29,14 +29,55 @@
         #recipeDetail { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,15,12,0.98); overflow-y: auto; }
         
         @media print {
-            body { background: white !important; color: black !important; }
-            .no-print, .bg-image, #detImg, nav, .admin-controls { display: none !important; }
-            #recipeDetail { position: absolute; top: 0; left: 0; width: 100%; display: block !important; background: white !important; color: black !important; }
-            #recipeDetail .glass { background: transparent !important; border: none !important; box-shadow: none !important; backdrop-filter: none !important; padding: 0 !important; }
-            .gold-text { color: black !important; }
-            #detMethod { color: black !important; font-size: 14pt !important; line-height: 1.6 !important; border: 1px solid #eee; padding: 20px; }
-        }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+    /* 1. Reset the body to allow scrolling/multi-page flow */
+    body { 
+        background: white !important; 
+        color: black !important; 
+        overflow: visible !important; 
+        height: auto !important;
+    }
+
+    /* 2. Hide everything that isn't the recipe */
+    .no-print, .bg-image, nav, .admin-controls, aside, header { 
+        display: none !important; 
+    }
+
+    /* 3. Make the recipe detail container expand to full height */
+    #recipeDetail { 
+        position: relative !important; /* Change from fixed to relative */
+        display: block !important; 
+        background: white !important; 
+        color: black !important; 
+        overflow: visible !important; 
+        height: auto !important;
+        inset: auto !important; /* Remove the top/left/right/bottom: 0 */
+    }
+
+    /* 4. Style adjustments for text readability on paper */
+    #recipeDetail .glass { 
+        background: transparent !important; 
+        border: none !important; 
+        box-shadow: none !important; 
+        backdrop-filter: none !important; 
+        padding: 0 !important; 
+    }
+
+    .gold-text { color: black !important; }
+    
+    #detMethod { 
+        color: black !important; 
+        font-size: 14pt !important; 
+        line-height: 1.6 !important; 
+        white-space: pre-wrap !important;
+        overflow: visible !important;
+    }
+
+    /* 5. Hide the image during print to save ink and prevent layout breaks */
+    #detImg { display: none !important; }
+    
+    /* 6. Ensure no page breaks happen in the middle of a paragraph */
+    p, div { page-break-inside: avoid; }
+}
     </style>
 </head>
 <body>

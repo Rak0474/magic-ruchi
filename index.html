@@ -15,211 +15,187 @@
             background: linear-gradient(rgba(1, 43, 33, 0.8), rgba(1, 43, 33, 0.9)),
             url('https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=2000&auto=format&fit=crop');
             background-size: cover; background-position: center; z-index: -1;
-            transition: transform 15s ease-out; pointer-events: none;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
         }
-        @supports (-webkit-touch-callout: none) {
-            .bg-image { background-attachment: scroll; }
-        }
-        body:hover .bg-image { transform: scale(1.1); }
 
         .gold-text { color: var(--gold); font-family: 'Playfair Display', serif; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(212, 175, 55, 0.15); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6); }
-        .logo-hover { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .logo-hover:hover { transform: scale(1.08) rotate(2deg); filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6)); }
         
-        .glass-btn { border: 1px solid rgba(212, 175, 55, 0.3); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.1em; }
-        .glass-btn:hover { background: var(--gold); color: black; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
-
         .admin-section { display: none; }
-        .admin-mode .admin-section { display: block; animation: fadeInRight 0.6s ease forwards; }
-        .admin-mode .delete-btn { display: block !important; }
+        .admin-active .admin-section { display: block; animation: fadeInRight 0.5s ease forwards; }
+        .admin-active .admin-controls { display: flex !important; }
 
-        @keyframes fadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         
         #recipeDetail { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,15,12,0.98); overflow-y: auto; }
         
         @media print {
-            body { overflow: visible !important; height: auto !important; }
-            body * { visibility: hidden; }
-            #recipeDetail, #recipeDetail * { visibility: visible; color: black !important; }
-            #recipeDetail {
-                position: absolute; left: 0; top: 0; width: 100%; height: auto !important;
-                overflow: visible !important; background: white !important; color: black !important;
-            }
-            #recipeDetail .max-w-5xl {
-                display: block !important; max-width: 100% !important; padding: 20px !important;
-                grid-template-columns: 1fr !important;
-            }
-            #recipeDetail img {
-                height: auto !important; max-height: 400px !important; width: 100% !important;
-                object-fit: contain !important; border-radius: 16px !important; margin-bottom: 16px !important;
-            }
-            #recipeDetail .glass {
-                background: transparent !important; border: 1px solid #ccc !important;
-                box-shadow: none !important; backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
-            }
-            #recipeDetail .gold-text { color: #8B6914 !important; }
-            #recipeDetail #detMethod {
-                white-space: pre-wrap !important; overflow: visible !important;
-                max-height: none !important; font-size: 14px !important;
-            }
-            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .no-print, .bg-image, #detImg, nav, .admin-controls { display: none !important; }
+            #recipeDetail { position: absolute; top: 0; left: 0; width: 100%; display: block !important; background: white !important; color: black !important; }
+            #recipeDetail .glass { background: transparent !important; border: none !important; box-shadow: none !important; backdrop-filter: none !important; padding: 0 !important; }
+            .gold-text { color: black !important; }
+            #detMethod { color: black !important; font-size: 14pt !important; line-height: 1.6 !important; border: 1px solid #eee; padding: 20px; }
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
-    <div class="bg-image"></div>
+    <div class="bg-image no-print"></div>
     
-    <nav class="flex justify-between items-center px-8 md:px-16 py-4 sticky top-0 z-50 backdrop-blur-xl border-b border-white/5 bg-black/30">
-        <div class="flex-1 flex items-center">
-            <button onclick="window.scrollTo(0,0)" class="text-[10px] tracking-[0.2em] font-bold opacity-60 hover:text-yellow-500 transition uppercase">Home</button>
+    <nav class="flex justify-between items-center px-8 md:px-16 py-4 sticky top-0 z-50 backdrop-blur-xl border-b border-white/5 bg-black/30 no-print">
+        <div class="flex-1">
+            <button onclick="window.scrollTo(0,0)" class="text-[10px] tracking-widest font-bold opacity-60 hover:text-yellow-500 uppercase">Home</button>
         </div>
         <div class="cursor-pointer" onclick="location.reload()">
-            <img src="logo.jpg" alt="Magic Ruchi" class="h-20 md:h-28 object-contain logo-hover">
+            <img src="logo.jpg" alt="Magic Ruchi" class="h-16 md:h-24 object-contain">
         </div>
         <div class="flex-1 flex justify-end">
-            <button onclick="document.body.classList.toggle('admin-mode')" class="text-[10px] tracking-[0.2em] font-bold border border-yellow-600/30 px-6 py-2 rounded-full hover:bg-yellow-600 hover:text-black transition uppercase">Admin Portal</button>
+            <button id="adminBtn" onclick="toggleAdmin()" class="text-[10px] tracking-widest font-bold border border-yellow-600/30 px-6 py-2 rounded-full hover:bg-yellow-600 hover:text-black transition uppercase">Admin Portal</button>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 py-16 flex flex-col lg:flex-row gap-12">
+    <main class="max-w-7xl mx-auto px-6 py-12 flex flex-col lg:flex-row gap-12 no-print">
         <div class="flex-grow">
-            <header class="text-center mb-16">
-                <span class="gold-text italic text-sm tracking-[0.4em] block mb-4 uppercase opacity-80">Magic in Every Bite</span>
-                <h1 class="text-5xl md:text-7xl gold-text mb-6 leading-tight">Authentic Kerala Kitchen</h1>
+            <header class="text-center mb-12">
+                <span class="gold-text italic text-sm tracking-[0.4em] block mb-2 uppercase opacity-80">Magic in Every Bite</span>
+                <h1 class="text-4xl md:text-6xl gold-text mb-6">Authentic Kerala Kitchen</h1>
             </header>
-
-            <div class="mb-12 flex justify-center gap-4 overflow-x-auto pb-6 no-scrollbar">
-                <button onclick="render('all')" class="glass-btn px-8 py-2 rounded-full text-[10px] font-black">All Flavors</button>
-                <button onclick="render('Veg')" class="glass-btn px-8 py-2 rounded-full text-[10px] font-black">Vegetarian</button>
-                <button onclick="render('Non-Veg')" class="glass-btn px-8 py-2 rounded-full text-[10px] font-black">Meat & Seafood</button>
-            </div>
-
-            <div id="recipeGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div id="emptyMsg" class="col-span-full text-center py-20 opacity-30 italic">
-                    Your kitchen is empty. Enter the Creator Studio to add your first recipe.
-                </div>
-            </div>
+            <div id="recipeGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
         <aside class="admin-section w-full lg:w-96">
-            <div class="glass p-8 rounded-[40px] sticky top-32">
-                <h2 class="gold-text text-2xl italic mb-6 text-center">Creator Studio</h2>
-                
-                <form id="recipeForm" class="space-y-4 mb-8">
-                    <input type="text" id="title" required placeholder="Recipe Name (English)" class="w-full bg-black/20 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-yellow-600">
+            <div class="glass p-8 rounded-[40px] sticky top-28">
+                <h2 id="formTitle" class="gold-text text-2xl italic mb-6 text-center">Creator Studio</h2>
+                <form id="recipeForm" class="space-y-4">
+                    <input type="hidden" id="editId">
+                    <input type="text" id="title" required placeholder="Recipe Name" class="w-full bg-black/20 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-yellow-600">
                     <input type="text" id="titleML" required placeholder="പേര് (മലയാളം)" class="w-full bg-black/20 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-yellow-600">
                     <select id="cat" class="w-full bg-[#011a14] border border-white/10 rounded-2xl p-4 text-white">
                         <option value="Veg">Vegetarian</option>
                         <option value="Non-Veg">Meat & Seafood</option>
                     </select>
-                    <div class="relative border-2 border-dashed border-white/10 rounded-2xl p-6 text-center hover:bg-white/5 transition-all">
-                        <input type="file" id="imgInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImg(event)">
-                        <span id="uploadTxt" class="text-[10px] uppercase opacity-40">Click to Upload Photo</span>
-                        <img id="imgPreview" src="#" class="hidden w-full h-40 object-cover rounded-xl mt-2">
-                    </div>
                     <textarea id="method" placeholder="Cooking Method..." required class="w-full bg-black/20 border border-white/10 rounded-2xl p-4 h-32 text-white outline-none focus:border-yellow-600"></textarea>
-                    <button type="submit" class="w-full bg-yellow-600 text-black font-black py-4 rounded-2xl uppercase text-[10px] hover:bg-yellow-500 transition shadow-2xl">Publish Magic</button>
+                    <button type="submit" id="submitBtn" class="w-full bg-yellow-600 text-black font-black py-4 rounded-2xl uppercase text-[10px]">Publish Magic</button>
+                    <button type="button" id="cancelEdit" onclick="resetForm()" class="hidden w-full border border-white/20 text-white py-2 rounded-2xl text-[8px] uppercase mt-2">Cancel Edit</button>
+                    <button type="button" onclick="logoutAdmin()" class="w-full text-[8px] uppercase tracking-widest opacity-40 mt-4 hover:opacity-100 transition">Logout Admin</button>
                 </form>
-
-                <div class="pt-6 border-t border-white/10 grid grid-cols-2 gap-4">
-                    <button onclick="exportDB()" class="text-[8px] border border-white/20 py-3 rounded-xl uppercase tracking-widest hover:bg-white/5">Backup Magic</button>
-                    <button onclick="document.getElementById('importFile').click()" class="text-[8px] border border-white/20 py-3 rounded-xl uppercase tracking-widest hover:bg-white/5">Restore Magic</button>
-                    <input type="file" id="importFile" class="hidden" accept=".json" onchange="importDB(event)">
-                </div>
             </div>
         </aside>
     </main>
 
     <div id="recipeDetail">
         <nav class="p-8 flex justify-between items-center no-print backdrop-blur-md bg-black/40 sticky top-0">
-            <button onclick="closeRecipe()" class="gold-text font-black text-[10px] uppercase tracking-widest">✕ Back</button>
-            <button onclick="window.print()" class="bg-yellow-600 text-black px-6 py-2 rounded-full font-black text-[10px] uppercase">Save PDF</button>
+            <button onclick="closeRecipe()" class="gold-text font-black text-[10px] uppercase">✕ Back</button>
+            <button onclick="window.print()" class="bg-yellow-600 text-black px-6 py-2 rounded-full font-black text-[10px] uppercase">Print PDF (Text Only)</button>
         </nav>
-        <div class="max-w-5xl mx-auto p-6 md:py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            <img id="detImg" src="" class="w-full h-[300px] md:h-[550px] object-cover rounded-[30px] md:rounded-[50px] shadow-2xl border border-white/10">
-            <div>
-                <h1 id="detTitle" class="gold-text text-4xl md:text-6xl mb-4 leading-tight"></h1>
-                <p id="detTitleML" class="text-xl md:text-3xl opacity-30 italic mb-8"></p>
-                <div class="glass p-10 rounded-[40px] leading-relaxed text-xl font-light text-white/80 whitespace-pre-wrap" id="detMethod"></div>
-            </div>
+        <div class="max-w-4xl mx-auto p-6 md:py-16">
+            <img id="detImg" src="" class="w-full h-[300px] md:h-[500px] object-cover rounded-[50px] mb-12 border border-white/10">
+            <h1 id="detTitle" class="gold-text text-5xl md:text-7xl mb-4"></h1>
+            <p id="detTitleML" class="text-2xl md:text-4xl opacity-30 italic mb-12"></p>
+            <div class="glass p-10 rounded-[40px] leading-relaxed text-xl font-light text-white/90 whitespace-pre-wrap" id="detMethod"></div>
         </div>
     </div>
 
-    <footer class="py-24 text-center opacity-30 text-[9px] uppercase tracking-[1em] no-print">
-        Magic രുചി &copy; 2026
-    </footer>
-
     <script>
-        let recipes = JSON.parse(localStorage.getItem('finalMagicDB')) || [];
-        
+        // --- 1. SETTINGS & DATA ---
+        const ADMIN_PASSWORD = "04742512896"; // CHANGE YOUR PASSWORD HERE
+        let recipes = JSON.parse(localStorage.getItem('finalMagicDB')) || [
+            {
+                id: 101,
+                title: "Kerala Fish Curry",
+                titleML: "മീൻ കറി",
+                cat: "Non-Veg",
+                img: "https://images.unsplash.com/photo-1626509135521-4f128a143528?q=80&w=800",
+                method: "1. Clean the fish and marinate with turmeric.\n2. Sauté shallots, ginger, and garlic in coconut oil.\n3. Add chili powder and Kudampuli (tamarind).\n4. Cook until the gravy thickens."
+            }
+        ];
+
         function save() { localStorage.setItem('finalMagicDB', JSON.stringify(recipes)); }
 
-        function previewImg(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (f) => {
-                    document.getElementById('imgPreview').src = f.target.result;
-                    document.getElementById('imgPreview').classList.remove('hidden');
-                    document.getElementById('uploadTxt').classList.add('hidden');
-                };
-                reader.readAsDataURL(file);
+        // --- 2. PASSWORD & ADMIN CONTROL ---
+        function toggleAdmin() {
+            if (document.body.classList.contains('admin-active')) {
+                document.body.classList.remove('admin-active');
+            } else {
+                const pass = prompt("Enter Admin Password:");
+                if (pass === ADMIN_PASSWORD) {
+                    document.body.classList.add('admin-active');
+                } else {
+                    alert("Wrong Password!");
+                }
             }
         }
 
+        function logoutAdmin() {
+            document.body.classList.remove('admin-active');
+            resetForm();
+        }
+
+        // --- 3. FORM ACTIONS ---
         document.getElementById('recipeForm').onsubmit = (e) => {
             e.preventDefault();
-            const newRecipe = {
-                id: Date.now(),
+            const id = document.getElementById('editId').value;
+            const data = {
                 title: document.getElementById('title').value,
                 titleML: document.getElementById('titleML').value,
                 cat: document.getElementById('cat').value,
-                img: document.getElementById('imgPreview').src,
-                method: document.getElementById('method').value
+                method: document.getElementById('method').value,
+                img: "https://images.unsplash.com/photo-1516714435131-44d6b64dc6a2?q=80&w=800"
             };
-            recipes.push(newRecipe);
-            save(); render();
-            e.target.reset();
-            document.getElementById('imgPreview').classList.add('hidden');
-            document.getElementById('uploadTxt').classList.remove('hidden');
+
+            if (id) {
+                const index = recipes.findIndex(r => r.id == id);
+                recipes[index] = { ...recipes[index], ...data };
+            } else {
+                recipes.push({ id: Date.now(), ...data });
+            }
+            
+            save(); render(); resetForm();
         };
 
-        function render(filterCat = 'all') {
+        function editRecipe(id) {
+            const r = recipes.find(rec => rec.id == id);
+            document.getElementById('editId').value = r.id;
+            document.getElementById('title').value = r.title;
+            document.getElementById('titleML').value = r.titleML;
+            document.getElementById('cat').value = r.cat;
+            document.getElementById('method').value = r.method;
+            document.getElementById('submitBtn').innerText = "Update Magic";
+            document.getElementById('formTitle').innerText = "Edit Recipe";
+            document.getElementById('cancelEdit').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function resetForm() {
+            document.getElementById('recipeForm').reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('submitBtn').innerText = "Publish Magic";
+            document.getElementById('formTitle').innerText = "Creator Studio";
+            document.getElementById('cancelEdit').classList.add('hidden');
+        }
+
+        function render() {
             const grid = document.getElementById('recipeGrid');
-            const emptyMsg = document.getElementById('emptyMsg');
             grid.innerHTML = '';
-
-            const filtered = filterCat === 'all' ? recipes : recipes.filter(r => r.cat === filterCat);
-
-            if (filtered.length === 0) {
-                grid.appendChild(emptyMsg);
-                emptyMsg.style.display = 'block';
-            } else {
-                filtered.forEach(r => {
-                    const card = document.createElement('div');
-                    card.className = "glass p-5 rounded-[40px] group cursor-pointer hover:border-yellow-500/40 transition-all duration-500";
-                    card.innerHTML = `
-                        <div class="relative h-72 overflow-hidden rounded-[30px] mb-6">
-                            <img src="${r.img}" class="w-full h-full object-cover transition duration-1000 group-hover:scale-110">
-                            <div class="absolute top-4 left-4 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-[8px] uppercase font-black border border-white/10 tracking-widest">${r.cat}</div>
+            recipes.forEach(r => {
+                const card = document.createElement('div');
+                card.className = "glass p-5 rounded-[40px] group cursor-pointer transition-all hover:border-yellow-500/30";
+                card.innerHTML = `
+                    <div class="relative h-64 overflow-hidden rounded-[30px] mb-6" onclick="viewRecipe(${r.id})">
+                        <img src="${r.img}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex justify-between items-start px-2">
+                        <div onclick="viewRecipe(${r.id})">
+                            <h3 class="gold-text text-xl font-bold">${r.title}</h3>
+                            <p class="text-[9px] opacity-40 uppercase tracking-widest">${r.titleML}</p>
                         </div>
-                        <div class="flex justify-between items-center px-2">
-                            <div>
-                                <h3 class="gold-text text-2xl font-bold">${r.title}</h3>
-                                <p class="text-[10px] opacity-40 uppercase tracking-widest mt-1">${r.titleML}</p>
-                            </div>
-                            <button onclick="remove(${r.id}); event.stopPropagation();" class="delete-btn hidden text-red-500 p-2 hover:scale-120 transition">✕</button>
-                        </div>`;
-                    card.querySelector('.relative').addEventListener('click', () => viewRecipe(r));
-                    card.querySelector('.gold-text').parentElement.addEventListener('click', () => viewRecipe(r));
-                    grid.prepend(card);
-                });
-            }
+                        <div class="admin-controls hidden flex flex-col gap-2">
+                            <button onclick="editRecipe(${r.id})" class="text-blue-400 text-[9px] font-bold uppercase hover:underline">Edit</button>
+                            <button onclick="remove(${r.id})" class="text-red-500 text-[9px] font-bold uppercase hover:underline">Delete</button>
+                        </div>
+                    </div>`;
+                grid.prepend(card);
+            });
         }
 
         function remove(id) {
@@ -229,7 +205,8 @@
             }
         }
 
-        function viewRecipe(r) {
+        function viewRecipe(id) {
+            const r = recipes.find(rec => rec.id == id);
             document.getElementById('detTitle').innerText = r.title;
             document.getElementById('detTitleML').innerText = r.titleML;
             document.getElementById('detImg').src = r.img;
@@ -241,38 +218,6 @@
         function closeRecipe() {
             document.getElementById('recipeDetail').style.display = 'none';
             document.body.style.overflow = 'auto';
-        }
-
-        // DATABASE ACTIONS
-        function exportDB() {
-            if(recipes.length === 0) return alert("No recipes to backup!");
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(recipes));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "magic_ruchi_backup.json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
-        }
-
-        function importDB(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                try {
-                    const imported = JSON.parse(event.target.result);
-                    if(confirm(`Restore ${imported.length} recipes? Current recipes will be merged.`)) {
-                        recipes = [...recipes, ...imported];
-                        // Remove duplicates by ID
-                        recipes = recipes.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i);
-                        save(); render();
-                    }
-                } catch(err) {
-                    alert("Invalid backup file!");
-                }
-            };
-            reader.readAsText(file);
         }
 
         window.onload = render;

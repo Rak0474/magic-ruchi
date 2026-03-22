@@ -12,9 +12,11 @@
         
         .bg-image {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(1, 43, 33, 0.8), rgba(1, 43, 33, 0.9)),
-            url('https://pixabay.com/photos/munnar-tea-plantation-kerala-4796051/');
-            background-size: cover; background-position: center; z-index: -1;
+            background: 
+                linear-gradient(rgba(1, 43, 33, 0.7), rgba(0, 0, 0, 0.85)),
+                url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+            z-index: -1;
+            filter: brightness(0.9) contrast(1.1);
         }
 
         .gold-text { color: var(--gold); font-family: 'Playfair Display', serif; }
@@ -79,6 +81,9 @@
                     <textarea id="method" placeholder="Cooking Method..." required class="w-full bg-black/20 border border-white/10 rounded-2xl p-4 h-32 text-white outline-none"></textarea>
                     <button type="submit" id="submitBtn" class="w-full bg-yellow-600 text-black font-black py-4 rounded-2xl uppercase text-[10px]">Publish Magic</button>
                     <button type="button" id="cancelEdit" onclick="resetForm()" class="hidden w-full border border-white/20 text-white py-2 rounded-2xl text-[8px] uppercase mt-2">Cancel Edit</button>
+                    <div class="flex gap-2 mt-4 pt-4 border-t border-white/5">
+                        <button type="button" onclick="resetToDefaults()" class="flex-1 border border-red-500/30 text-red-500/60 hover:text-red-500 py-2 rounded-xl text-[8px] uppercase transition">Reset Defaults</button>
+                    </div>
                 </form>
             </div>
         </aside>
@@ -101,20 +106,142 @@
         const ADMIN_PASSWORD = "04742512896"; 
 
         // ADD PERMANENT RECIPES HERE
+        const VEG_CLIPART = "https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f96c.svg";
+        const NONVEG_CLIPART = "https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f357.svg";
+
         const globalRecipes = [
             {
                 id: 101,
                 title: "Kerala Fish Curry",
                 titleML: "മീൻ കറി",
                 cat: "Non-Veg",
-                img: "https://images.unsplash.com/photo-1626509135521-4f128a143528?q=80&w=800",
+                img: "https://images.unsplash.com/photo-1621460241682-136544521443?q=80&w=2070&auto=format&fit=crop",
                 method: "1. Clean the fish.\n2. Sauté shallots and ginger.\n3. Add chili and Kudampuli.\n4. Simmer until thick."
+            },
+         {
+                id: 102,
+                title: "Kerala Chicken Curry",
+                titleML: "കോഴി കറി",
+                cat: "Non-Veg",
+                img: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?q=80&w=2070&auto=format&fit=crop",
+                method: "1. Marinate chicken with turmeric, chili, salt.\n2. Sauté onions, ginger-garlic.\n3. Add spices and tomato; cook down.\n4. Add chicken and coconut milk; simmer till tender."
+            },
+            {
+                id: 103,
+                title: "Beef Ularthiyathu",
+                titleML: "ബീഫ് ഉലർത്തിയത്",
+                cat: "Non-Veg",
+                img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?q=80&w=2070&auto=format&fit=crop",
+                method: "1. Pressure-cook beef with spices.\n2. Temper coconut oil with curry leaves.\n3. Add cooked beef and roast dry.\n4. Finish with fried coconut slivers."
+            },
+            {
+                id: 104,
+                title: "Prawn Roast",
+                titleML: "ചെമ്മീൻ റോസ്റ്റ്",
+                cat: "Non-Veg",
+                img: "https://images.unsplash.com/photo-1567129937968-cdad8f0d5a3a?q=80&w=2070&auto=format&fit=crop",
+                method: "1. Clean prawns; marinate with chili, turmeric.\n2. Sauté onion, green chili, ginger-garlic.\n3. Add prawns and roast on medium.\n4. Finish with pepper and curry leaves."
+            },
+            {
+                id: 105,
+                title: "Egg Roast",
+                titleML: "മുട്ട റോസ്റ്റ്",
+                cat: "Non-Veg",
+                img: "https://images.unsplash.com/photo-1594179047519-f347310d3322?q=80&w=2070&auto=format&fit=crop",
+                method: "1. Boil and peel eggs; slit.\n2. Caramelize onions with spices.\n3. Add tomato and reduce.\n4. Toss eggs in masala; simmer briefly."
+            },
+            {
+                id: 106,
+                title: "Avial",
+                titleML: "അവിയൽ",
+                cat: "Veg",
+                img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070&auto=format&fit=crop",
+                method: "1. Cook mixed vegetables with turmeric and salt.\n2. Grind coconut, cumin, green chilies, curd.\n3. Mix into vegetables; warm gently.\n4. Temper coconut oil with curry leaves."
+            },
+            {
+                id: 107,
+                title: "Erissery",
+                titleML: "എരിശ്ശേരി",
+                cat: "Veg",
+                img: "https://images.unsplash.com/photo-1606471191009-63994c53433b?q=80&w=2070&auto=format&fit=crop",
+                method: "1. Cook pumpkin and beans till soft.\n2. Grind coconut, cumin, chilies; add.\n3. Simmer to thicken.\n4. Top with roasted coconut and mustard."
+            },
+            {
+                id: 108,
+                title: "Sambar",
+                titleML: "സാംബാർ",
+                cat: "Veg",
+                img: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?q=80&w=2070&auto=format&fit=crop",
+                method: "1. Pressure-cook dal till soft.\n2. Cook veggies with tamarind and sambar powder.\n3. Combine dal and veggies; simmer.\n4. Temper mustard, chili, curry leaves; pour over."
+            },
+            {
+                id: 109,
+                title: "Vegetable Stew",
+                titleML: "സ്റ്റ്യൂ",
+                cat: "Veg",
+                img: "https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=2070&auto=format&fit=crop",
+                method: "1. Sauté onions, ginger, green chilies in coconut oil.\n2. Add vegetables and thin coconut milk.\n3. Cook till tender.\n4. Finish with thick coconut milk; do not boil."
+            },
+            {
+                id: 110,
+                title: "Thalassery Biryani",
+                titleML: "തളശ്ശേരി ബിരിയാണി",
+                cat: "Non-Veg",
+                img: "https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?q=80&w=2070&auto=format&fit=crop",
+                method: "1. Marinate meat with spices and curd.\n2. Fry onions golden; make masala.\n3. Parboil Jeerakasala rice with whole spices.\n4. Layer and dum-cook till aromatic."
             }
         ];
 
-        let recipes = JSON.parse(localStorage.getItem('finalMagicDB')) || [...globalRecipes];
+        let recipes = [];
+
+        function loadRecipes() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('finalMagicDB'));
+                if (!Array.isArray(saved) || saved.length === 0) {
+                    recipes = [...globalRecipes];
+                    save();
+                } else {
+                    const ids = new Set(saved.map(r => r.id));
+                    const merged = saved.map(r => {
+                        const globalMatch = globalRecipes.find(gr => gr.id === r.id);
+                        // Migrate to new clipart if it was using old unsplash or icons8 links
+                        if (globalMatch && (r.img.includes('unsplash.com') || r.img.includes('icons8.com'))) {
+                            return { ...r, img: globalMatch.img };
+                        }
+                        return r;
+                    });
+                    globalRecipes.forEach(gr => { if (!ids.has(gr.id)) merged.push(gr); });
+                    recipes = merged;
+                }
+            } catch (_) {
+                recipes = [...globalRecipes];
+                save();
+            }
+        }
 
         function save() { localStorage.setItem('finalMagicDB', JSON.stringify(recipes)); }
+
+        function resetToDefaults() {
+            if(confirm("Warning: This will delete ALL your custom recipes and reset to the official permanent list. Continue?")) {
+                localStorage.removeItem('finalMagicDB');
+                location.reload();
+            }
+        }
+
+        function copyAsCode(id) {
+            const r = recipes.find(rec => rec.id == id);
+            const code = JSON.stringify({
+                id: r.id,
+                title: r.title,
+                titleML: r.titleML,
+                cat: r.cat,
+                img: r.img,
+                method: r.method
+            }, null, 4);
+            navigator.clipboard.writeText(code + ",").then(() => {
+                alert("Code copied! You can now paste it into globalRecipes in index.html");
+            });
+        }
 
         function toggleAdmin() {
             if (document.body.classList.contains('admin-active')) {
@@ -142,19 +269,23 @@
         document.getElementById('recipeForm').onsubmit = (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value;
+            const cat = document.getElementById('cat').value;
+            const fallback = cat === 'Veg' ? VEG_CLIPART : NONVEG_CLIPART;
             const data = {
                 title: document.getElementById('title').value,
                 titleML: document.getElementById('titleML').value,
-                cat: document.getElementById('cat').value,
+                cat: cat,
                 method: document.getElementById('method').value,
-                img: document.getElementById('imgPreview').src
+                img: document.getElementById('imgPreview').src && !document.getElementById('imgPreview').src.includes('#') ? document.getElementById('imgPreview').src : fallback
             };
 
             if (id) {
                 const index = recipes.findIndex(r => r.id == id);
                 recipes[index] = { ...recipes[index], ...data };
             } else {
-                recipes.push({ id: Date.now(), ...data });
+                const newRecipe = { id: Date.now(), ...data };
+                recipes.push(newRecipe);
+                console.log("New Recipe Code (to add to globalRecipes):", JSON.stringify(newRecipe, null, 4) + ",");
             }
             save(); render(); resetForm();
         };
@@ -164,10 +295,12 @@
             grid.innerHTML = '';
             recipes.forEach(r => {
                 const card = document.createElement('div');
-                card.className = "glass p-5 rounded-[40px] group cursor-pointer transition-all";
+                card.className = "glass p-5 rounded-[40px] group cursor-pointer transition-all relative overflow-hidden";
+                const fallback = r.cat === 'Veg' ? VEG_CLIPART : NONVEG_CLIPART;
+                const isClipart = r.img.includes('twemoji') || r.img.includes('icons8');
                 card.innerHTML = `
-                    <div class="relative h-64 overflow-hidden rounded-[30px] mb-6" onclick="viewRecipe(${r.id})">
-                        <img src="${r.img}" class="w-full h-full object-cover">
+                    <div class="relative h-64 overflow-hidden rounded-[30px] mb-6 flex items-center justify-center ${isClipart ? 'bg-white/5 p-12' : ''}" onclick="viewRecipe(${r.id})">
+                        <img src="${r.img}" onerror="this.src='${fallback}'" class="${isClipart ? 'w-32 h-32 object-contain' : 'w-full h-full object-cover'}">
                     </div>
                     <div class="flex justify-between items-start px-2">
                         <div onclick="viewRecipe(${r.id})">
@@ -176,9 +309,16 @@
                         </div>
                         <div class="admin-controls hidden flex flex-col gap-2">
                             <button onclick="editRecipe(${r.id})" class="text-blue-400 text-[9px] font-bold uppercase hover:underline">Edit</button>
-                            <button onclick="remove(${r.id})" class="text-red-500 text-[9px] font-bold uppercase hover:underline">Delete</button>
+                            <button onclick="copyAsCode(${r.id})" class="text-green-400 text-[9px] font-bold uppercase hover:underline">Copy Code</button>
+                            <button onclick="remove(${r.id})" class="text-red-500 text-[9px] font-bold uppercase hover:underline">${globalRecipes.some(gr => gr.id === r.id) ? 'Hide' : 'Delete'}</button>
                         </div>
                     </div>`;
+                if (globalRecipes.some(gr => gr.id === r.id)) {
+                    const badge = document.createElement('div');
+                    badge.className = "absolute top-4 right-4 bg-yellow-600/80 text-black text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-tighter backdrop-blur-sm z-10";
+                    badge.innerText = "Permanent";
+                    card.prepend(badge);
+                }
                 grid.prepend(card);
             });
         }
@@ -208,14 +348,33 @@
         }
 
         function remove(id) {
-            if(confirm("Delete?")) { recipes = recipes.filter(r => r.id !== id); save(); render(); }
+            const isPerm = globalRecipes.some(r => r.id === id);
+            const msg = isPerm ? "This is a permanent recipe. Hiding it will remove it from view until you clear site data. Hide?" : "Delete this recipe permanently?";
+            if(confirm(msg)) { recipes = recipes.filter(r => r.id !== id); save(); render(); }
         }
 
         function viewRecipe(id) {
             const r = recipes.find(rec => rec.id == id);
+            const fallback = r.cat === 'Veg' ? VEG_CLIPART : NONVEG_CLIPART;
+            const isClipart = r.img.includes('twemoji') || r.img.includes('icons8');
+            
             document.getElementById('detTitle').innerText = r.title;
             document.getElementById('detTitleML').innerText = r.titleML;
-            document.getElementById('detImg').src = r.img;
+            
+            const detImg = document.getElementById('detImg');
+            detImg.src = r.img;
+            detImg.onerror = () => { detImg.src = fallback; };
+            
+            // Adjust detail image container for clipart
+            const detImgContainer = detImg.parentElement;
+            if (isClipart) {
+                detImg.className = "w-48 h-48 object-contain mx-auto";
+                detImgContainer.className = "max-w-4xl mx-auto p-6 md:py-16 flex flex-col items-center text-center";
+            } else {
+                detImg.className = "w-full h-[300px] md:h-[500px] object-cover rounded-[50px] mb-12 border border-white/10";
+                detImgContainer.className = "max-w-4xl mx-auto p-6 md:py-16";
+            }
+            
             document.getElementById('detMethod').innerText = r.method;
             document.getElementById('recipeDetail').style.display = 'block';
             document.body.style.overflow = 'hidden';
@@ -223,7 +382,7 @@
 
         function closeRecipe() { document.getElementById('recipeDetail').style.display = 'none'; document.body.style.overflow = 'auto'; }
 
-        window.onload = render;
+        window.onload = () => { loadRecipes(); render(); };
     </script>
 </body>
 </html>

@@ -46,7 +46,10 @@
     <div class="bg-image no-print"></div>
     
     <nav class="flex justify-between items-center px-8 md:px-16 py-4 sticky top-0 z-50 backdrop-blur-xl border-b border-white/5 bg-black/30 no-print">
-        <div class="flex-1"><button onclick="window.scrollTo(0,0)" class="text-[10px] tracking-widest font-bold opacity-60 uppercase">Home</button></div>
+        <div class="flex-1 flex items-center gap-4">
+            <div id="viewCounter" class="text-[10px] tracking-widest font-bold opacity-40 uppercase"></div>
+            <button onclick="window.scrollTo(0,0)" class="text-[10px] tracking-widest font-bold opacity-60 uppercase">Home</button>
+        </div>
         <div class="cursor-pointer" onclick="location.reload()"><img src="logo.jpg" alt="Magic Ruchi" class="h-16 md:h-24 object-contain"></div>
         <div class="flex-1 flex justify-end">
             <button id="adminBtn" onclick="toggleAdmin()" class="text-[10px] tracking-widest font-bold border border-yellow-600/30 px-6 py-2 rounded-full hover:bg-yellow-600 hover:text-black transition uppercase">Admin Portal</button>
@@ -78,6 +81,7 @@
                         <span id="uploadTxt" class="text-[10px] uppercase opacity-40">Upload Photo</span>
                         <img id="imgPreview" src="#" class="hidden w-full h-40 object-cover rounded-xl mt-2">
                     </div>
+                    <textarea id="ingredients" placeholder="Ingredients (comma separated)..." required class="w-full bg-black/20 border border-white/10 rounded-2xl p-4 h-24 text-white outline-none"></textarea>
                     <textarea id="method" placeholder="Cooking Method..." required class="w-full bg-black/20 border border-white/10 rounded-2xl p-4 h-32 text-white outline-none"></textarea>
                     <button type="submit" id="submitBtn" class="w-full bg-yellow-600 text-black font-black py-4 rounded-2xl uppercase text-[10px]">Publish Magic</button>
                     <button type="button" id="cancelEdit" onclick="resetForm()" class="hidden w-full border border-white/20 text-white py-2 rounded-2xl text-[8px] uppercase mt-2">Cancel Edit</button>
@@ -98,7 +102,16 @@
             <img id="detImg" src="" class="w-full h-[300px] md:h-[500px] object-cover rounded-[50px] mb-12 border border-white/10">
             <h1 id="detTitle" class="gold-text text-5xl md:text-7xl mb-4"></h1>
             <p id="detTitleML" class="text-2xl md:text-4xl opacity-30 italic mb-12"></p>
-            <div class="glass p-10 rounded-[40px] leading-relaxed text-xl font-light text-white/90 whitespace-pre-wrap" id="detMethod"></div>
+            
+            <div class="mb-12">
+                <h3 class="gold-text text-xl uppercase tracking-widest mb-4 opacity-60">Ingredients</h3>
+                <div id="detIngredients" class="glass p-8 rounded-[30px] text-lg leading-relaxed text-white/80"></div>
+            </div>
+
+            <div>
+                <h3 class="gold-text text-xl uppercase tracking-widest mb-4 opacity-60">Method</h3>
+                <div class="glass p-10 rounded-[40px] leading-relaxed text-xl font-light text-white/90 whitespace-pre-wrap" id="detMethod"></div>
+            </div>
         </div>
     </div>
 
@@ -116,15 +129,17 @@
                 titleML: "മീൻ കറി",
                 cat: "Non-Veg",
                 img: "https://images.unsplash.com/photo-1621460241682-136544521443?q=80&w=2070&auto=format&fit=crop",
-                method: "1. Clean the fish.\n2. Sauté shallots and ginger.\n3. Add chili and Kudampuli.\n4. Simmer until thick."
+                ingredients: "500g King fish, 2 tbsp Red chili powder, 1/2 tsp Turmeric powder, 1 tbsp Ginger-garlic paste, 5-6 Shallots, 2-3 Kudampuli pieces, Curry leaves, Coconut oil, Salt",
+                method: "1. Soak Kudampuli in warm water. Clean and cut the fish into medium pieces.\n2. In a clay pot (Meen Chatti), heat coconut oil and sauté shallots, ginger, garlic, and curry leaves until golden brown.\n3. Lower the heat and add red chili powder, turmeric powder, and salt. Sauté until the raw smell goes away.\n4. Pour in water and add the soaked Kudampuli pieces. Bring to a boil.\n5. Carefully add the fish pieces. Cover and cook on medium flame for 15-20 minutes until the gravy thickens and the oil separates.\n6. Finish with a drizzle of fresh coconut oil and fresh curry leaves. Let it rest for at least an hour for the flavors to develop."
             },
-         {
+            {
                 id: 102,
                 title: "Kerala Chicken Curry",
                 titleML: "കോഴി കറി",
                 cat: "Non-Veg",
                 img: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?q=80&w=2070&auto=format&fit=crop",
-                method: "1. Marinate chicken with turmeric, chili, salt.\n2. Sauté onions, ginger-garlic.\n3. Add spices and tomato; cook down.\n4. Add chicken and coconut milk; simmer till tender."
+                ingredients: "500g Chicken, 2 Onions, 1 Tomato, 1 tbsp Ginger-garlic paste, 1.5 tbsp Chicken masala, 1 tsp Chili powder, 1/2 tsp Turmeric, 1 cup Coconut milk, Curry leaves, Coconut oil",
+                method: "1. Marinate chicken pieces with turmeric powder, red chili powder, and salt for 30 minutes.\n2. Heat coconut oil in a heavy-bottomed pan. Sauté sliced onions until they turn translucent and slightly brown.\n3. Add crushed ginger, garlic, and green chilies. Sauté until the raw smell disappears.\n4. Add chicken masala and chopped tomatoes. Cook until the tomatoes become mushy and oil starts to separate.\n5. Add the marinated chicken and mix well. Cover and cook on low-medium heat in its own juices for 10 minutes.\n6. Pour in thin coconut milk and simmer until the chicken is tender.\n7. Add thick coconut milk, curry leaves, and a pinch of garam masala. Heat through but do not boil. Serve hot with Appam or rice."
             },
             {
                 id: 103,
@@ -132,7 +147,8 @@
                 titleML: "ബീഫ് ഉലർത്തിയത്",
                 cat: "Non-Veg",
                 img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?q=80&w=2070&auto=format&fit=crop",
-                method: "1. Pressure-cook beef with spices.\n2. Temper coconut oil with curry leaves.\n3. Add cooked beef and roast dry.\n4. Finish with fried coconut slivers."
+                ingredients: "500g Beef, 1 tbsp Ginger-garlic paste, 1 tsp Fennel powder, 1 tbsp Black pepper powder, 1/4 cup Coconut slivers, 1 Onion, 1 tsp Turmeric, Curry leaves, Coconut oil",
+                method: "1. Pressure cook beef with ginger-garlic paste, turmeric, crushed black pepper, fennel powder, and salt until tender (usually 4-5 whistles).\n2. Heat coconut oil in a wide pan (Uruli). Fry coconut slivers until golden brown and keep aside.\n3. In the same oil, sauté sliced shallots, ginger, garlic, and curry leaves until dark brown.\n4. Add the cooked beef along with its stock. Increase the heat and roast, stirring frequently.\n5. Add more black pepper powder and a dash of coconut oil. Continue roasting until the beef turns dark brown and almost dry.\n6. Garnish with the fried coconut slivers and fresh curry leaves. The beef should be crispy on the outside and tender inside."
             },
             {
                 id: 104,
@@ -140,7 +156,8 @@
                 titleML: "ചെമ്മീൻ റോസ്റ്റ്",
                 cat: "Non-Veg",
                 img: "https://images.unsplash.com/photo-1567129937968-cdad8f0d5a3a?q=80&w=2070&auto=format&fit=crop",
-                method: "1. Clean prawns; marinate with chili, turmeric.\n2. Sauté onion, green chili, ginger-garlic.\n3. Add prawns and roast on medium.\n4. Finish with pepper and curry leaves."
+                ingredients: "250g Prawns, 2 Onions, 1 Tomato, 1 tbsp Ginger-garlic paste, 1 tsp Black pepper powder, 1 tbsp Chili powder, 1/2 tsp Turmeric, Curry leaves, Coconut oil",
+                method: "1. Clean and devein the prawns. Marinate with red chili powder, turmeric, pepper powder, and salt.\n2. Heat coconut oil in a pan. Sauté sliced onions and green chilies until they turn golden.\n3. Add ginger-garlic paste and chopped tomatoes. Cook until the oil separates from the masala.\n4. Add the marinated prawns. Do not add water as prawns release their own moisture.\n5. Cook on medium heat for 5-7 minutes. Overcooking prawns makes them rubbery.\n6. Once the gravy is thick and coats the prawns, add curry leaves and a teaspoon of coconut oil. Sauté for another minute and remove from heat."
             },
             {
                 id: 105,
@@ -148,7 +165,8 @@
                 titleML: "മുട്ട റോസ്റ്റ്",
                 cat: "Non-Veg",
                 img: "https://images.unsplash.com/photo-1594179047519-f347310d3322?q=80&w=2070&auto=format&fit=crop",
-                method: "1. Boil and peel eggs; slit.\n2. Caramelize onions with spices.\n3. Add tomato and reduce.\n4. Toss eggs in masala; simmer briefly."
+                ingredients: "4 Eggs, 3 Onions, 1 Tomato, 1 tbsp Ginger-garlic paste, 1 tsp Chili powder, 1 tsp Coriander powder, 1/2 tsp Turmeric, Curry leaves, Coconut oil",
+                method: "1. Boil eggs, peel them, and make small vertical slits on the surface.\n2. Heat coconut oil and sauté sliced onions on low-medium flame until they are deeply caramelized (this is key for flavor).\n3. Add ginger-garlic paste, green chilies, and curry leaves. Sauté well.\n4. Add turmeric, chili powder, and coriander powder. Sauté for a minute.\n5. Add chopped tomatoes and cook until they are soft and the oil separates.\n6. Gently add the boiled eggs and toss them in the masala. Cover and simmer for 5 minutes so the flavors seep into the eggs. Serve with Appam or Idiyappam."
             },
             {
                 id: 106,
@@ -156,7 +174,8 @@
                 titleML: "അവിയൽ",
                 cat: "Veg",
                 img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070&auto=format&fit=crop",
-                method: "1. Cook mixed vegetables with turmeric and salt.\n2. Grind coconut, cumin, green chilies, curd.\n3. Mix into vegetables; warm gently.\n4. Temper coconut oil with curry leaves."
+                ingredients: "Mixed vegetables (Cucumber, Carrot, Beans, Drumstick, Yam), 1 cup Grated coconut, 1 tsp Cumin, 4 Green chilies, 1/2 cup Curd, Curry leaves, Coconut oil",
+                method: "1. Cut vegetables (cucumber, carrot, beans, drumstick, yam) into 2-inch long thin batons.\n2. Cook the vegetables with turmeric powder, salt, and very little water in a covered pot. Do not overcook; they should remain firm.\n3. Coarsely grind grated coconut, cumin seeds, and green chilies without adding much water.\n4. Once the vegetables are cooked and the water has evaporated, add the coconut mixture and mix gently.\n5. Add beaten curd and simmer on low heat for 2-3 minutes. Do not boil after adding curd.\n6. Turn off the heat. Drizzle plenty of fresh coconut oil and add fresh curry leaves. Mix gently and keep covered for 10 minutes before serving."
             },
             {
                 id: 107,
@@ -164,7 +183,8 @@
                 titleML: "എരിശ്ശേരി",
                 cat: "Veg",
                 img: "https://images.unsplash.com/photo-1606471191009-63994c53433b?q=80&w=2070&auto=format&fit=crop",
-                method: "1. Cook pumpkin and beans till soft.\n2. Grind coconut, cumin, chilies; add.\n3. Simmer to thicken.\n4. Top with roasted coconut and mustard."
+                ingredients: "250g Pumpkin, 1/2 cup Cowpeas, 1 cup Grated coconut, 1 tsp Cumin, 1 tsp Chili powder, 1/2 tsp Turmeric, Curry leaves, Coconut oil",
+                method: "1. Peel and cube the pumpkin. Pressure cook with cowpeas (vanpayar), turmeric powder, chili powder, and salt until soft.\n2. Mash the pumpkin slightly with the back of a spoon.\n3. Grind half a cup of coconut with cumin seeds and green chilies into a fine paste. Add this to the cooked pumpkin-bean mixture and simmer for 5 minutes.\n4. Heat coconut oil in a small pan. Splutter mustard seeds and add dried red chilies and curry leaves.\n5. Add the remaining half cup of grated coconut to the oil and fry on low heat until it turns a deep golden brown.\n6. Pour this tempering over the curry and mix well. The roasted coconut gives Erissery its signature nutty flavor."
             },
             {
                 id: 108,
@@ -172,7 +192,8 @@
                 titleML: "സാംബാർ",
                 cat: "Veg",
                 img: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?q=80&w=2070&auto=format&fit=crop",
-                method: "1. Pressure-cook dal till soft.\n2. Cook veggies with tamarind and sambar powder.\n3. Combine dal and veggies; simmer.\n4. Temper mustard, chili, curry leaves; pour over."
+                ingredients: "1/2 cup Toor dal, Mixed vegetables (Drumstick, Carrot, Ladies finger), 2 tbsp Sambar powder, 1 tbsp Tamarind paste, 1/2 tsp Turmeric, Curry leaves, Mustard seeds, Coconut oil",
+                method: "1. Pressure cook Toor dal with a pinch of turmeric and oil until completely mushy.\n2. Boil vegetables (drumstick, carrot, pumpkin, shallots) in tamarind water along with sambar powder and salt until tender.\n3. Add the cooked dal to the vegetable-tamarind mixture. Adjust consistency by adding water if needed. Simmer for 10 minutes.\n4. Heat coconut oil in a separate pan. Splutter mustard seeds, dried red chilies, curry leaves, and a pinch of asafoetida (hing).\n5. Pour the tempering over the sambar and immediately cover the pot to trap the aroma. Garnish with fresh coriander leaves if desired."
             },
             {
                 id: 109,
@@ -180,7 +201,8 @@
                 titleML: "സ്റ്റ്യൂ",
                 cat: "Veg",
                 img: "https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=2070&auto=format&fit=crop",
-                method: "1. Sauté onions, ginger, green chilies in coconut oil.\n2. Add vegetables and thin coconut milk.\n3. Cook till tender.\n4. Finish with thick coconut milk; do not boil."
+                ingredients: "Mixed vegetables (Potato, Carrot, Beans), 1 Onion, 1 tsp Ginger, 3 Green chilies, 1 cup Thick coconut milk, 2 cups Thin coconut milk, Whole spices, Curry leaves, Coconut oil",
+                method: "1. Cube potatoes, carrots, and beans. Sauté whole spices (cinnamon, cloves, cardamom) in coconut oil.\n2. Add sliced onions, ginger, and green chilies. Sauté until onions are soft but not brown.\n3. Add the vegetables and thin coconut milk. Cover and cook until the vegetables are tender.\n4. Once cooked, lower the heat and pour in the thick coconut milk.\n5. Season with salt and add fresh curry leaves. Warm the stew gently; do not let it boil as coconut milk might curdle.\n6. The stew should be creamy, white, and mildly spiced. Perfect with Appam or bread."
             },
             {
                 id: 110,
@@ -188,7 +210,8 @@
                 titleML: "തളശ്ശേരി ബിരിയാണി",
                 cat: "Non-Veg",
                 img: "https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?q=80&w=2070&auto=format&fit=crop",
-                method: "1. Marinate meat with spices and curd.\n2. Fry onions golden; make masala.\n3. Parboil Jeerakasala rice with whole spices.\n4. Layer and dum-cook till aromatic."
+                ingredients: "500g Jeerakasala rice, 500g Chicken/Mutton, 3 Onions, 1 tbsp Ginger-garlic paste, 2 tsp Biryani masala, 1/2 cup Curd, Ghee, Saffron, Cashews, Raisins, Curry leaves",
+                method: "1. Marinate meat with curd, ginger-garlic paste, green chili paste, turmeric, and salt for at least 1 hour.\n2. Cook the meat with sliced onions and tomatoes until tender and the gravy is thick.\n3. In a separate pot, heat ghee and sauté whole spices. Add washed Jeerakasala rice and fry for 2 minutes.\n4. Add hot water (1:2 ratio) and salt. Cook until the rice is 90% done and water is absorbed.\n5. In a heavy-bottomed vessel, layer the meat masala and rice. Sprinkle fried onions (biryani), cashews, raisins, and a pinch of biryani masala between layers.\n6. Cover tightly with a lid (Dum) and cook on very low heat for 15-20 minutes. Mix gently before serving to combine the white rice and flavorful meat masala."
             }
         ];
 
@@ -204,9 +227,17 @@
                     const ids = new Set(saved.map(r => r.id));
                     const merged = saved.map(r => {
                         const globalMatch = globalRecipes.find(gr => gr.id === r.id);
-                        // Migrate to new clipart if it was using old unsplash or icons8 links
-                        if (globalMatch && (r.img.includes('unsplash.com') || r.img.includes('icons8.com'))) {
-                            return { ...r, img: globalMatch.img };
+                        if (globalMatch) {
+                            // Update to new detailed methods if it was using the old short ones
+                            const isOldMethod = r.method.split('\n').length <= 4;
+                            const isOldImg = r.img.includes('unsplash.com') || r.img.includes('icons8.com');
+                            
+                            return { 
+                                ...r, 
+                                img: isOldImg ? globalMatch.img : r.img,
+                                ingredients: globalMatch.ingredients || r.ingredients || "",
+                                method: isOldMethod ? globalMatch.method : r.method
+                            };
                         }
                         return r;
                     });
@@ -236,6 +267,7 @@
                 titleML: r.titleML,
                 cat: r.cat,
                 img: r.img,
+                ingredients: r.ingredients,
                 method: r.method
             }, null, 4);
             navigator.clipboard.writeText(code + ",").then(() => {
@@ -275,6 +307,7 @@
                 title: document.getElementById('title').value,
                 titleML: document.getElementById('titleML').value,
                 cat: cat,
+                ingredients: document.getElementById('ingredients').value,
                 method: document.getElementById('method').value,
                 img: document.getElementById('imgPreview').src && !document.getElementById('imgPreview').src.includes('#') ? document.getElementById('imgPreview').src : fallback
             };
@@ -329,6 +362,7 @@
             document.getElementById('title').value = r.title;
             document.getElementById('titleML').value = r.titleML;
             document.getElementById('cat').value = r.cat;
+            document.getElementById('ingredients').value = r.ingredients || "";
             document.getElementById('method').value = r.method;
             document.getElementById('imgPreview').src = r.img;
             document.getElementById('imgPreview').classList.remove('hidden');
@@ -375,6 +409,10 @@
                 detImgContainer.className = "max-w-4xl mx-auto p-6 md:py-16";
             }
             
+            const ingDiv = document.getElementById('detIngredients');
+            const ings = (r.ingredients || "").split(',').map(i => i.trim()).filter(i => i);
+            ingDiv.innerHTML = ings.length > 0 ? `<ul class="list-disc pl-5 space-y-2">${ings.map(i => `<li>${i}</li>`).join('')}</ul>` : "No ingredients listed.";
+
             document.getElementById('detMethod').innerText = r.method;
             document.getElementById('recipeDetail').style.display = 'block';
             document.body.style.overflow = 'hidden';
@@ -382,7 +420,18 @@
 
         function closeRecipe() { document.getElementById('recipeDetail').style.display = 'none'; document.body.style.overflow = 'auto'; }
 
-        window.onload = () => { loadRecipes(); render(); };
+        function updateViewCount() {
+            let count = localStorage.getItem('magicRuchiViewCount') || 0;
+            count++;
+            localStorage.setItem('magicRuchiViewCount', count);
+            document.getElementById('viewCounter').innerText = `${count} views`;
+        }
+
+        window.onload = () => { 
+            loadRecipes(); 
+            render(); 
+            updateViewCount(); 
+        };
     </script>
 </body>
 </html>
